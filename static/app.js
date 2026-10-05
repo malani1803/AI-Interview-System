@@ -1,6 +1,17 @@
 let S={tech:[],hr:[],round:'technical',idx:0,answers:{},techId:null,hrId:null,cid:null};
 let rec=null,recOn=false;
 
+// Hardcoded defaults so section 2 works before any upload (view + practice only)
+async function loadDefaults(){
+  try{
+    const r=await fetch('/api/default-questions').then(r=>r.json());
+    S.tech=r.technical.map((q,i)=>({id:-(i+1),...q}));
+    S.hr=r.hr.map((q,i)=>({id:-(100+i),...q}));
+    render();
+  }catch(e){}
+}
+loadDefaults();
+
 async function upload(){
   const fd=new FormData();
   fd.append('name',document.getElementById('name').value);
@@ -30,6 +41,7 @@ function nextQ(){
 async function submitRound(){
   nextQ0();
   const iid=S.round==='technical'?S.techId:S.hrId;
+  if(!iid){alert('Upload a resume first to save and evaluate this round (defaults are practice-only).');return;}
   const payload={interview_id:iid,answers:Object.entries(S.answers)
     .filter(([qid])=>cur().some(q=>q.id==qid))
     .map(([qid,t])=>({question_id:+qid,transcript:t}))};

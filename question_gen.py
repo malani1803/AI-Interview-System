@@ -29,6 +29,9 @@ HR_BANK = [
 ]
 
 def generate_technical(skills, projects, n=10):
+    # No resume signals at all -> hardcoded general set (works without upload)
+    if not skills and not projects:
+        return get_default_technical()[:n]
     qs = []
     # 6 skill-based
     pool = []
@@ -55,3 +58,31 @@ def generate_technical(skills, projects, n=10):
 def generate_hr(n=6):
     return [{"text": q, "skill_tag": "hr", "difficulty": "behavioral"}
             for q in HR_BANK[:n]]
+
+# Hardcoded general technical set: shown instantly before any upload,
+# and used when the resume yields zero skills AND zero projects.
+HARDCODED_TECHNICAL = [
+    {"text": "Explain OOP concepts (encapsulation, inheritance, polymorphism, abstraction) with an example.",
+     "skill_tag": "oops", "difficulty": "conceptual"},
+    {"text": "What is the difference between SQL and NoSQL databases? When would you use each?",
+     "skill_tag": "dbms", "difficulty": "conceptual"},
+    {"text": "What is a REST API? Explain GET, POST, PUT and DELETE with an example.",
+     "skill_tag": "rest api", "difficulty": "conceptual"},
+    {"text": "Explain process vs thread. What is a deadlock and how do you prevent it?",
+     "skill_tag": "os", "difficulty": "conceptual"},
+    {"text": "What is the difference between TCP and UDP? Give a use case for each.",
+     "skill_tag": "cn", "difficulty": "conceptual"},
+    {"text": "How does Git work? Explain commit, branch, merge and how you resolve a merge conflict.",
+     "skill_tag": "git", "difficulty": "practical"},
+    {"text": "Explain Big-O notation. Compare the time complexity of linear search vs binary search.",
+     "skill_tag": "dsa", "difficulty": "conceptual"},
+    {"text": "What is normalization in DBMS? Explain 1NF, 2NF and 3NF briefly.",
+     "skill_tag": "dbms", "difficulty": "conceptual"},
+    {"text": "Your code crashes in production. Walk me through how you debug and fix it step by step.",
+     "skill_tag": "testing", "difficulty": "scenario"},
+    {"text": "Explain your final year project: your role, tech stack, and biggest challenge.",
+     "skill_tag": "project:final year project", "difficulty": "project-deep"},
+]
+
+def get_default_technical():
+    return [dict(q) for q in HARDCODED_TECHNICAL]

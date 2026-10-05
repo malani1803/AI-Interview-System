@@ -36,7 +36,7 @@ async def upload(name: str = Form(""), email: str = Form(""),
     cid = db.create_candidate(name, email, text[:8000])
     db.save_keywords(cid, skills)
 
-    tech_qs = qg.generate_technical([s for s in skills] or [("python", "skill")], projects, 10)
+    tech_qs = qg.generate_technical(skills, projects, 10)
     hr_qs = qg.generate_hr(6)
 
     tech_id = db.create_interview(cid, "technical")
@@ -49,6 +49,11 @@ async def upload(name: str = Form(""), email: str = Form(""),
             "skills": [s for s, _ in skills], "projects": projects,
             "tech_interview_id": tech_id, "hr_interview_id": hr_id,
             "technical": tq, "hr": hq}
+
+@app.get("/api/default-questions")
+def defaults():
+    """Hardcoded sets shown before any upload (no DB writes)."""
+    return {"technical": qg.get_default_technical(), "hr": qg.generate_hr(6)}
 
 @app.post("/api/submit")
 def submit(req: SubmitReq):
