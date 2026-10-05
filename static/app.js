@@ -1,14 +1,39 @@
 let S={tech:[],hr:[],round:'technical',idx:0,answers:{},techId:null,hrId:null,cid:null};
 let rec=null,recOn=false;
 
+// Offline fallback: identical set, used if /api/default-questions is unreachable
+// (e.g. old server still running). Guarantees Qs always show.
+const FALLBACK_TECH=[
+"Explain OOP concepts (encapsulation, inheritance, polymorphism, abstraction) with an example.",
+"What is the difference between SQL and NoSQL databases? When would you use each?",
+"What is a REST API? Explain GET, POST, PUT and DELETE with an example.",
+"Explain process vs thread. What is a deadlock and how do you prevent it?",
+"What is the difference between TCP and UDP? Give a use case for each.",
+"How does Git work? Explain commit, branch, merge and how you resolve a merge conflict.",
+"Explain Big-O notation. Compare the time complexity of linear search vs binary search.",
+"What is normalization in DBMS? Explain 1NF, 2NF and 3NF briefly.",
+"Your code crashes in production. Walk me through how you debug and fix it step by step.",
+"Explain your final year project: your role, tech stack, and biggest challenge."];
+const FALLBACK_HR=[
+"Tell me about yourself and walk me through your resume.",
+"Why should we hire you for this role? What are your key strengths?",
+"Describe a challenging team situation or conflict and how you handled it.",
+"Where do you see yourself in 2-3 years? How does this role fit?",
+"Tell me about a failure or mistake. What did you learn?",
+"How do you handle pressure or tight deadlines? Give an example."];
+
 // Hardcoded defaults so section 2 works before any upload (view + practice only)
 async function loadDefaults(){
   try{
-    const r=await fetch('/api/default-questions').then(r=>r.json());
+    const r=await fetch('/api/default-questions').then(r=>{if(!r.ok)throw 0;return r.json();});
     S.tech=r.technical.map((q,i)=>({id:-(i+1),...q}));
     S.hr=r.hr.map((q,i)=>({id:-(100+i),...q}));
-    render();
-  }catch(e){}
+  }catch(e){
+    S.tech=FALLBACK_TECH.map((t,i)=>({id:-(i+1),text:t,skill_tag:'general',difficulty:'conceptual'}));
+    S.hr=FALLBACK_HR.map((t,i)=>({id:-(100+i),text:t,skill_tag:'hr',difficulty:'behavioral'}));
+    document.getElementById('prog').innerText='Offline practice set (restart server for latest: uvicorn app:app --reload)';
+  }
+  render();
 }
 loadDefaults();
 
@@ -25,7 +50,7 @@ async function upload(){
   document.getElementById('skills').innerText='Skills: '+r.skills.join(', ');
   showRound('technical');
 }
-function cur(){return S[S.round];}
+function cur(){return S.round==='technical'?S.tech:S.hr;}
 function showRound(r){S.round=r;S.idx=0;render();}
 function render(){
   const q=cur()[S.idx];
