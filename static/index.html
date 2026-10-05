@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Interview v1</title><link rel="stylesheet" href="/static/style.css"></head>
+<body><div class="wrap">
+<h1>AI Interview v1 — Resume to Feedback</h1>
+<section class="card"><h2>1. Upload resume</h2>
+<input id="name" placeholder="Name"><input id="email" placeholder="Email">
+<input type="file" id="file" accept=".pdf,.docx,.txt">
+<button onclick="upload()">Parse + Generate Questions</button>
+<div id="skills"></div></section>
+<section class="card"><h2>2. Interview (text Q + voice answer)</h2>
+<div class="tabs"><button onclick="showRound('technical')">Technical (10)</button>
+<button onclick="showRound('hr')">HR (6)</button>
+<button onclick="loadHistory()">History (DB)</button></div>
+<div id="qbox"></div>
+<div id="controls">
+<button id="micBtn" onclick="toggleMic()">🎤 Start voice</button>
+<span id="micState">mic off - you can also type</span></div>
+<textarea id="ans" rows="4" placeholder="Answer appears here (voice-to-text) or type..."></textarea>
+<div><button onclick="nextQ()">Save & Next →</button>
+<button onclick="submitRound()">Submit round for evaluation</button></div>
+<div id="prog"></div></section>
+<section class="card"><h2>3. Feedback</h2><div id="fb"></div><pre id="hist"></pre></section>
+</div><script src="/static/app.js"></script></body></html>
